@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>JS DustBin</title>
+
+    <script
+      src="https://code.jquery.com/jquery-3.3.1.min.js"
+      integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+      crossorigin="anonymous">
+    </script>
+
+    <style type="text/css">
+      html, body {
+        padding: 0;
+        margin: 0;
+      }
+
+      .top-bar {
+        float: left;
+        background-color: silver;
+        height: 40px;
+        width: 100%;
+      }
+
+      #logo {
+        float: left;
+        margin-top: 5px;
+        margin-left: 10px;
+        font-size: 170%;
+        font-weight: bold;
+      }
+
+      .mid-bar {
+        margin: 0 auto;
+        background-color: silver;
+        width: 360px;
+        height: 40px;
+      }
+
+      .text {
+        float: left;
+        font-weight: bold;
+        border-left: 1px solid grey;
+        border-top: 1px solid grey;
+        border-bottom: 1px solid grey;
+        padding: 9px;
+        margin-top: 1px;
+      }
+
+      #html {
+        margin-left: 20px;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+      }
+
+      #output {
+        border-right: 1px solid grey;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+
+      .active {
+        background-color: skyblue;
+      }
+
+      .highlighted {
+        background-color: grey;
+      }
+
+      #body-container {
+        clear: both;
+      }
+
+      textarea {
+        resize: none;
+        border-top: none;
+        border-left: none;
+      }
+
+      iframe {
+        border: none;
+      }
+
+      .panel {
+        float: left;
+      }
+
+      #panel-html {
+        float: left;
+
+        border-right: 1px solid grey;
+      }
+
+      #panel-output {
+        float:left;
+        border-right: 1px solid grey;
+      }
+
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Bar  -->
+    <div class="top-bar">
+      <div id="logo">JS DustBin</div>
+      <div class="mid-bar">
+        <div class="text active" id="html"> HTML </div>
+        <div class="text" id="css"> CSS </div>
+        <div class="text" id="javascript"> Javascript </div>
+        <div class="text active" id="output"> Output </div>
+      </div>
+    </div>
+
+    <!-- Body Container -->
+    <div id="body-container">
+      <textarea id="panel-html" class="panel"><p id="paragraph"> Hi there! </p></textarea>
+      <textarea id="panel-css" class="hidden panel">p {color: red}</textarea>
+      <textarea id="panel-javascript" class="hidden panel"> document.getElementById('paragraph').innerHTML = "Hello"; </textarea>
+      <iframe id="panel-output" class="panel"> </iframe>
+    </div>
+
+
+    <script type="text/javascript">
+      // For the hover on text elements in 'mid-bar'
+      $(".text").hover(function() {
+        $(this).addClass('highlighted');
+      }, function() {
+        $(this).removeClass('highlighted');
+      });
+
+      // Click method for toggling class on 'top-bar' menu
+      $(".text").click(function() {
+
+        $(this).toggleClass('active');
+        $(this).removeClass('highlighted');
+        // Toggle the panel on the click method
+        var panelID = 'panel-' + $(this).attr('id');
+        $("#" + panelID ).toggleClass('hidden');
+        // Change the panel width according to the number of active classes
+        $('.panel').width(($(window).width() / $('.active').length) - 6);
+      });
+
+      // JQuery to find window(browser) height
+      $('.panel').height($(window).height() - 45);
+      // JQuery to find window(browser) width
+      $('.panel').width(($(window).width() / 2) - 5);
+
+      // Put textarea content onto the iframe output
+      updateOnload();
+
+      // Update textarea content onto the iframe with any key-press event
+      $(".panel").on('change keyup paste', function() {
+        updateOnload();
+      });
+
+      function updateOnload() {
+        $("#panel-output").contents().find("html").html("<html> <head> <style type='text/css'>" + $('#panel-css').val() + "</style> </head> <body>" +  $("#panel-html").val() + "</body></html>");
+        var iframe = document.getElementById('panel-output').contentWindow;
+        iframe.eval($("#panel-javascript").val());
+      }
+    </script>
+  </body>
+</html>
